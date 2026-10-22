@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="FAIRINO FR5 MoveIt 2 환경 구성 — ROS 2 Humble 환경 안내">
+<title>FAIRINO FR5 MoveIt 2 환경 구성</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #172b40;
+  --muted: #5a6d7f;
+  --accent: #1762ba;
+  --line: #dce4ec;
+  --paper: #ffffff;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 6rem; }
+body {
+  margin: 0;
+  background: #f4f7fa;
+  color: var(--ink);
+  font: 16px/1.85 -apple-system, BlinkMacSystemFont, "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+a { color: var(--accent); text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #83b6f0;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+.skip-link { position: absolute; top: -6rem; left: 1rem; z-index: 5; padding: .5rem 1rem; background: var(--paper); }
+.skip-link:focus { top: 1rem; }
+.layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 2rem; max-width: 1240px; margin: 2rem auto 4rem; padding: 0 1.5rem; }
+.sidebar { min-width: 0; }
+.contents { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding: .7rem .3rem; }
+.contents summary { cursor: pointer; color: var(--ink); font-weight: 700; margin-bottom: .6rem; }
+.contents ol { list-style: none; margin: 0; padding: 0; }
+.contents ol ol { margin: .2rem 0 .6rem .8rem; border-left: 1px solid var(--line); padding-left: .7rem; }
+.contents li { margin: .25rem 0; }
+.contents a { display: block; padding: .18rem 0; color: var(--muted); text-decoration: none; font-size: .83rem; line-height: 1.65; }
+.contents a:hover { color: var(--accent); }
+main { min-width: 0; }
+article { padding: 2.5rem 3rem; background: var(--paper); border: 1px solid var(--line); border-radius: .75rem; box-shadow: 0 5px 22px #172b4005; }
+h1, h2, h3 { line-height: 1.45; letter-spacing: -.025em; }
+h1 { font-size: 2.05rem; margin: 0 0 1.7rem; }
+h2 { font-size: 1.45rem; margin: 3rem 0 1.2rem; padding-top: .2rem; padding-bottom: .7rem; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.13rem; margin: 2rem 0 .8rem; }
+p { margin: .9rem 0; }
+li { margin: .3rem 0; }
+ul, ol { padding-left: 1.5rem; }
+strong { font-weight: 700; }
+code { font-family: "DejaVu Sans Mono", "Liberation Mono", Consolas, monospace; font-size: .86em; }
+:not(pre) > code { padding: .12em .35em; border-radius: .25rem; background: #eef3f8; color: #174a78; overflow-wrap: anywhere; }
+pre { max-width: 100%; margin: 0; padding: 1.1rem 1.3rem; overflow-x: auto; line-height: 1.7; tab-size: 4; word-break: normal; overflow-wrap: normal; }
+pre code { white-space: pre; color: inherit; }
+.code-block { min-width: 0; max-width: 100%; margin: 1.2rem 0; border: 1px solid var(--line); border-radius: .5rem; background: #f3f6f9; color: #344d63; }
+.code-block figcaption { padding: .55rem 1.3rem; border-bottom: 1px solid var(--line); font-size: .8rem; font-weight: 700; line-height: 1.5; }
+.code-block--terminal { background: #142638; color: #eef5fc; border-color: #263c53; }
+.code-block--terminal figcaption { color: #bed5ec; border-color: #2b425a; }
+.code-block--path { background: #edf5ff; color: #174a78; border-color: #b9d3ee; border-left: 4px solid #4384c4; }
+.code-block--path figcaption { border-color: #ccdef0; }
+.code-block--path pre, .code-block--path code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.code-block--config { background: #f6f2fb; color: #553873; border-color: #dcd0eb; }
+.code-block--config figcaption { border-color: #e3d9ee; }
+.code-block--diagram { background: #f3f6f9; color: #344d63; }
+blockquote { margin: 1.3rem 0; padding: .7rem 1.1rem; border-left: 4px solid #d3a443; border-radius: 0 .4rem .4rem 0; background: #fff9ea; color: #634a19; }
+blockquote p { margin: .2rem 0; }
+.table-scroll { max-width: 100%; overflow-x: auto; margin: 1.2rem 0; border: 1px solid var(--line); border-radius: .45rem; }
+table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+th, td { padding: .65rem .9rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+th { background: #eff4f9; font-weight: 700; }
+tr:last-child td { border-bottom: 0; }
+tbody tr:nth-child(even) { background: #fafcfe; }
+img { display: block; width: auto; max-width: 100%; height: auto; margin: 1.5rem auto .8rem; border: 1px solid var(--line); border-radius: .4rem; }
+p:has(> em:only-child) { color: var(--muted); font-size: .88rem; }
+video { display: block; max-width: 100%; height: auto; margin: 1.2rem auto; border-radius: .5rem; background: #142638; }
+.page-footer { padding: 1.3rem 0; text-align: right; font-size: .85rem; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 1rem; margin-top: 1rem; }
+  .contents { position: static; max-height: none; padding: .85rem 1.2rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--paper); }
+  article { padding: 2rem; }
+}
+@media (max-width: 520px) {
+  body { font-size: 15px; }
+  .layout { padding: 0 .7rem; }
+  article { padding: 1.4rem 1rem; }
+  h1 { font-size: 1.65rem; }
+  h2 { font-size: 1.25rem; margin-top: 2.3rem; }
+  h3 { font-size: 1.05rem; }
+  pre { padding: .9rem; }
+  th, td { padding: .6rem; }
+}
+@media print {
+  @page { margin: 18mm; }
+  body { background: white; color: black; font-size: 10pt; }
+  .sidebar, .skip-link, .page-footer { display: none; }
+  .layout { display: block; max-width: none; margin: 0; padding: 0; }
+  article { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+  h1 { font-size: 22pt; }
+  h2 { font-size: 16pt; }
+  h3 { font-size: 12pt; }
+  h1, h2, h3 { break-after: avoid; }
+  .code-block { background: #f4f6f8; color: black; border-color: #ccd3da; break-inside: avoid; }
+  .code-block figcaption { color: black; border-color: #ccd3da; }
+  pre { white-space: pre-wrap; }
+  pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .table-scroll { overflow: visible; }
+  thead { display: table-header-group; }
+  tr, img { break-inside: avoid; }
+  img { max-height: 220mm; object-fit: contain; }
+  a { color: #174a78; }
+  video { display: none; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#document">본문으로 이동</a>
+<div class="layout">
+  <aside class="sidebar">
+    <details class="contents" open>
+      <summary>목차</summary>
+      <nav aria-label="문서 목차"><ol><li><a href="#section-1">1. 구성 환경 및 사전 준비</a><ol><li><a href="#section-2">필요한 패키지 설치</a></li><li><a href="#section-3">터미널 환경 준비</a></li></ol></li><li><a href="#section-4">2. PC–FR5 연결 및 WebApp 로그인</a><ol><li><a href="#section-5">2-1. Network에서 유선 프로필 추가</a></li><li><a href="#section-6">2-2. Identity에서 이름 설정</a></li><li><a href="#section-7">2-3. IPv4를 수동 주소로 설정</a></li><li><a href="#section-8">2-4. 나머지 설정 확인 후 저장</a></li></ol></li><li><a href="#section-9">3. 저장소 다운로드 및 버전 선택</a></li><li><a href="#section-10">4. 하드웨어 설정 세팅</a><ol><li><a href="#section-11">플러그인 설정</a></li><li><a href="#section-12">로봇 IP 확인</a></li></ol></li><li><a href="#section-13">5. Build</a></li><li><a href="#section-14">6. 실행</a><ol><li><a href="#section-15">실행 영상</a></li></ol></li></ol></nav>
+    </details>
+  </aside>
+  <main id="document">
+    <article aria-labelledby="document-start"><h1 id="document-start">FAIRINO FR5 MoveIt 2 환경 구성</h1>
+<p>PC와 FR5를 연결하고 ROS 2 Humble에서 MoveIt 2를 실행할 수 있도록 환경을 구성하는 절차입니다.
+아래 명령은 Ubuntu 터미널의 Bash 기준입니다.</p>
+<p>문서의 네트워크 설정 캡처는 <code>images/fr5-network/</code>, 실행 영상은 <code>videos/</code>에 포함되어 있습니다. Markdown으로 배포할 때는 이 문서와 이미지·영상의 상대 위치가 유지되도록 <code>docs</code> 폴더 전체를 함께 전달합니다.</p>
+<h2 id="section-1">1. 구성 환경 및 사전 준비</h2>
+<div aria-label="표 1" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th scope="col">항목</th>
+<th scope="col">기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS</td>
+<td>Ubuntu 22.04, x86_64 PC</td>
+</tr>
+<tr>
+<td>ROS</td>
+<td>ROS 2 Humble Desktop</td>
+</tr>
+<tr>
+<td>로봇 모델</td>
+<td>FR5 V6.0</td>
+</tr>
+<tr>
+<td>로봇 Web/소프트웨어 버전</td>
+<td>v3.9.3</td>
+</tr>
+<tr>
+<td>확인한 제어기 버전</td>
+<td>V3.9.15-QX</td>
+</tr>
+<tr>
+<td>저장소 태그</td>
+<td><code>V3.0.0_RobotV3.9.3</code></td>
+</tr>
+<tr>
+<td>작업공간</td>
+<td><code>~/fairino_ws</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>이 문서는 위 장비를 기준으로 작성했습니다. 다른 장비에서는 WebApp의 <strong>System → About</strong>에서 모델과 소프트웨어 버전을 먼저 확인하고, 대응하는 드라이버 버전을 선택합니다. 여기서 선택한 태그의 하드웨어 패키지 이름은 <code>fairino_hardware</code>입니다. <a href="https://github.com/FAIR-INNOVATION/frcobot_ros2/releases/tag/V3.0.0_RobotV3.9.3">공식 v3.9.3 릴리스</a></p>
+<h3 id="section-2">필요한 패키지 설치</h3>
+<p>ROS 2 Humble Desktop과 ROS apt 저장소가 이미 설치·설정된 PC에서 실행합니다. MoveIt은 <code>/opt/ros/humble</code>의 apt 설치본을 사용합니다. <a href="https://support.fairino.us/portal/en/kb/articles/getting-started-with-the-fairino-moveit2-plugin">제조사 MoveIt 설치 안내</a></p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-1">
+<figcaption id="code-caption-1">터미널 명령어</figcaption>
+<pre><code class="language-bash">sudo apt update
+sudo apt install \
+  git build-essential cmake python3-colcon-common-extensions \
+  ros-humble-moveit \
+  ros-humble-ros2-control ros-humble-ros2-controllers \
+  ros-humble-xacro ros-humble-joint-state-publisher-gui \
+  ros-humble-rosidl-default-generators \
+  ros-humble-ament-cmake-gmock \
+  ros-humble-ament-lint-auto ros-humble-ament-lint-common
+</code></pre>
+</figure>
+<h3 id="section-3">터미널 환경 준비</h3>
+<p>다른 ROS 작업공간의 환경이 함께 로드되면 패키지·라이브러리 버전 충돌이 발생할 수 있습니다. <code>~/.bashrc</code>에 다른 작업공간을 자동으로 불러오는 줄이 있다면 앞에 <code>#</code>를 붙이고 <strong>새 터미널</strong>을 엽니다. 다음은 주석 처리 대상의 예시입니다.</p>
+<figure class="code-block code-block--config" aria-labelledby="code-caption-2">
+<figcaption id="code-caption-2">설정 파일 내용 · .bashrc 예시</figcaption>
+<pre><code class="language-bash"># source ~/ros2_ws/install/local_setup.bash
+# source ~/tetra_ws/install/local_setup.bash
+# source ~/ws_moveit/install/setup.bash
+# source ~/franka_ros2_ws/install/setup.bash
+</code></pre>
+</figure>
+<p>ROS 기본 설정인 <code>source /opt/ros/humble/setup.bash</code>는 유지합니다. 기존 터미널에서 <code>.bashrc</code>를 다시 불러오는 것만으로는 이미 로드된 환경이 제거되지 않습니다.
+프롬프트에 <code>(base)</code> 등 Conda 환경이 표시된다면 <code>conda deactivate</code>로 해제합니다.</p>
+<p>새 터미널에서 확인합니다.</p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-3">
+<figcaption id="code-caption-3">터미널 명령어</figcaption>
+<pre><code class="language-bash">source /opt/ros/humble/setup.bash
+ros2 pkg prefix moveit_ros_move_group
+ros2 pkg prefix joint_trajectory_controller
+</code></pre>
+</figure>
+<p>두 결과 모두 <code>/opt/ros/humble</code>이어야 합니다. 첫 빌드 전에는 <code>~/fairino_ws/install</code>이 아직 없으므로 해당 경로를 source하지 않습니다.</p>
+<h2 id="section-4">2. PC–FR5 연결 및 WebApp 로그인</h2>
+<p>로봇 제어함/버튼박스의 <strong>PC 연결용 LAN 포트</strong>에 PC를 연결합니다. 로봇 내부 통신용 포트와 구분합니다. 아래는 기본 IP <code>192.168.58.2</code>를 사용하는 버튼박스 측 연결 기준입니다. <a href="https://manual.fairino.support/latest/CobotsManual/install_power_robot.html#connect-the-control-box">제조사 연결 안내</a></p>
+<p>로봇용 유선 연결 프로필을 <strong><code>FR5-direct</code></strong>라는 이름으로 따로 만듭니다. 기존 <code>Wired connection 1</code>은 보존하고, FR5를 사용할 때 <code>FR5-direct</code>를 선택합니다. 두 항목은 같은 유선 어댑터에서 선택해 사용할 수 있는 서로 다른 설정입니다.</p>
+<p>PC에 유선 어댑터가 여러 개라면 로봇에 연결한 어댑터를 선택합니다. 이번 구성에 사용한 PC의 인터페이스 이름은 <code>eno1</code>이지만 PC마다 다를 수 있습니다.</p>
+<h3 id="section-5">2-1. Network에서 유선 프로필 추가</h3>
+<p>Ubuntu <strong>설정(Settings) → 네트워크(Network)</strong>를 열고, 로봇에 연결한 <strong>유선(Wired)</strong> 항목 오른쪽의 <strong><code>+</code></strong>를 누릅니다.</p>
+<p><img alt="그림 2-1. Ubuntu Network 화면의 Wired 연결 목록과 새 프로필 추가 버튼" src="images/fr5-network/01-network.png"/></p>
+<p><em>그림 2-1. 캡처에는 이미 생성하고 활성화한 <code>FR5-direct</code>와 PC 주소 <code>192.168.58.10</code>이 보입니다. 처음 설정하는 PC에서는 <code>+</code>로 새로 만들고, 이미 <code>FR5-direct</code>가 있다면 해당 항목의 톱니바퀴에서 설정을 확인합니다.</em></p>
+<h3 id="section-6">2-2. Identity에서 이름 설정</h3>
+<p>새 프로필의 <strong>Identity</strong> 탭에서 그림처럼 <strong>Name</strong>을 <code>FR5-direct</code>로 입력합니다. 나머지 탭 설정까지 마친 후 <strong>Add</strong>를 누릅니다.</p>
+<p><img alt="그림 2-2. Identity 탭에서 Name을 FR5-direct로 입력한 상태" src="images/fr5-network/02-identity.png"/></p>
+<p><em>그림 2-2. 프로필 이름을 <code>FR5-direct</code>로 지정한 화면입니다. MAC 주소는 로봇에 연결한 PC 어댑터 기준이며, 다른 PC의 주소를 복사하지 않습니다.</em></p>
+<h3 id="section-7">2-3. IPv4를 수동 주소로 설정</h3>
+<p><strong>IPv4</strong> 탭에서 <strong>IPv4 Method → Manual(수동)</strong>을 선택하고, 그림처럼 PC 주소와 넷마스크를 입력합니다. <strong>Gateway는 비워 둡니다.</strong></p>
+<p><img alt="그림 2-3. IPv4를 Manual로 선택하고 주소 192.168.58.10과 넷마스크 255.255.255.0을 입력한 상태" src="images/fr5-network/03-ipv4.png"/></p>
+<p><em>그림 2-3. 로봇 연결에 사용할 수동 IPv4 주소를 입력한 화면입니다. DNS 항목은 아래로 스크롤해 확인합니다.</em></p>
+<p>설정값은 다음과 같습니다.</p>
+<div aria-label="표 2" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th scope="col">설정</th>
+<th scope="col">값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IPv4 Method</td>
+<td><code>Manual</code></td>
+</tr>
+<tr>
+<td>Address</td>
+<td><code>192.168.58.10</code></td>
+</tr>
+<tr>
+<td>Netmask</td>
+<td><code>255.255.255.0</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>192.168.58.10</code>은 <strong>PC의 주소</strong>, <code>192.168.58.2</code>는 <strong>로봇의 주소</strong>입니다. PC의 Address 칸에 로봇 주소를 입력하지 않습니다.</p>
+<h3 id="section-8">2-4. 나머지 설정 확인 후 저장</h3>
+<ul>
+<li><strong>IPv6</strong> 탭: <strong>Disable</strong>을 선택합니다. 로봇 연결은 IPv4를 사용합니다.</li>
+<li><strong>Security</strong> 탭: <strong>802.1x Security</strong>를 <strong>끔(Off)</strong>으로 유지합니다.</li>
+</ul>
+<p>설정을 마쳤다면 오른쪽 위 <strong>Add</strong>를 눌러 저장합니다. 기존 프로필을 편집 중이라면 저장 버튼이 <strong>Apply</strong>로 표시될 수 있습니다.</p>
+<h2 id="section-9">3. 저장소 다운로드 및 버전 선택</h2>
+<p>아래는 작업공간과 저장소를 처음 만드는 경우의 명령입니다. 이미 해당 브랜치에서 작업 중이라면 반복할 필요가 없습니다.</p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-4">
+<figcaption id="code-caption-4">터미널 명령어</figcaption>
+<pre><code class="language-bash">mkdir -p ~/fairino_ws/src
+cd ~/fairino_ws/src
+git clone https://github.com/FAIR-INNOVATION/frcobot_ros2.git
+cd ~/fairino_ws/src/frcobot_ros2
+git switch -c fr5-v3.9.3 V3.0.0_RobotV3.9.3
+</code></pre>
+</figure>
+<h2 id="section-10">4. 하드웨어 설정 세팅</h2>
+<p>빌드 전에 MoveIt이 사용할 하드웨어 플러그인과 로봇 IP를 설정합니다. 이미 launch를 실행 중이라면 <code>Ctrl+C</code>로 종료한 뒤 파일을 수정합니다.</p>
+<h3 id="section-11">플러그인 설정</h3>
+<p>편집할 하드웨어 설정 파일의 경로는 다음과 같습니다.</p>
+<figure class="code-block code-block--path" aria-labelledby="code-caption-5">
+<figcaption id="code-caption-5">파일 경로</figcaption>
+<pre><code class="language-text">~/fairino_ws/src/frcobot_ros2/fairino5_v6_moveit2_config/config/fairino5_v6_robot.ros2_control.xacro
+</code></pre>
+</figure>
+<p>기본값은 가상 로봇용 플러그인입니다.</p>
+<figure class="code-block code-block--config" aria-labelledby="code-caption-6">
+<figcaption id="code-caption-6">설정 파일 내용 · XML</figcaption>
+<pre><code class="language-xml">&lt;plugin&gt;mock_components/GenericSystem&lt;/plugin&gt;
+</code></pre>
+</figure>
+<p>실제 FR5에 연결하려면 위 줄을 주석 처리하고 실제 드라이버를 활성화합니다. <code>&lt;!-- ... --&gt;</code>는 XML 주석이며, <code>&lt;hardware&gt;</code> 안에서 <strong>주석 처리되지 않은 <code>&lt;plugin&gt;</code>은 한 개만</strong> 둡니다.</p>
+<figure class="code-block code-block--config" aria-labelledby="code-caption-7">
+<figcaption id="code-caption-7">설정 파일 내용 · XML</figcaption>
+<pre><code class="language-xml">&lt;!-- &lt;plugin&gt;mock_components/GenericSystem&lt;/plugin&gt; --&gt;
+&lt;plugin&gt;fairino_hardware/FairinoHardwareInterface&lt;/plugin&gt;
+</code></pre>
+</figure>
+<p>실행 대상은 이 설정으로 결정됩니다. 가상 플러그인을 유지하면 가상 로봇을 사용하고, 실제 드라이버를 선택하면 FR5에 연결합니다. 실행 명령은 동일합니다.</p>
+<h3 id="section-12">로봇 IP 확인</h3>
+<p>드라이버의 IP는 다음 파일에 지정되어 있습니다.</p>
+<figure class="code-block code-block--path" aria-labelledby="code-caption-8">
+<figcaption id="code-caption-8">파일 경로</figcaption>
+<pre><code class="language-text">~/fairino_ws/src/frcobot_ros2/fairino_hardware/include/fairino_hardware/fairino_hardware_interface.hpp
+</code></pre>
+</figure>
+<figure class="code-block code-block--config" aria-labelledby="code-caption-9">
+<figcaption id="code-caption-9">설정 파일 내용 · C++</figcaption>
+<pre><code class="language-cpp">#define CONTROLLER_IP_ADDRESS "192.168.58.2"
+</code></pre>
+</figure>
+<p>로봇 IP가 <code>192.168.58.2</code>라면 그대로 사용합니다. 다른 IP를 사용한다면 실제 주소로 변경한 뒤 저장합니다.</p>
+<h2 id="section-13">5. Build</h2>
+<p>1절에서 준비한 터미널에서 4절의 설정을 반영해 필요한 네 패키지를 빌드합니다.</p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-10">
+<figcaption id="code-caption-10">터미널 명령어</figcaption>
+<pre><code class="language-bash">source /opt/ros/humble/setup.bash
+cd ~/fairino_ws
+colcon build --symlink-install --packages-select \
+  fairino_msgs \
+  fairino_hardware \
+  fairino_description \
+  fairino5_v6_moveit2_config
+</code></pre>
+</figure>
+<p>네 패키지 모두 빌드가 완료되고 <code>Failed</code> 또는 <code>Aborted</code>가 없는지 확인합니다. 이후 하드웨어 설정이나 IP를 변경했다면 위 명령으로 다시 빌드합니다.</p>
+<h2 id="section-14">6. 실행</h2>
+<p>빌드가 완료되면 다음 명령으로 MoveIt과 RViz를 실행합니다. 새 터미널을 열 때에도 두 줄의 환경 설정을 먼저 불러옵니다.</p>
+<blockquote>
+<p>실제 FR5 드라이버를 선택하면 launch 후 활성화 시점부터 주기적으로 제어 명령이 전송됩니다. 작업 공간과 비상정지 접근을 확보하고 담당자와 실행 준비를 확인합니다.</p>
+</blockquote>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-11">
+<figcaption id="code-caption-11">터미널 명령어</figcaption>
+<pre><code class="language-bash">source /opt/ros/humble/setup.bash
+source ~/fairino_ws/install/local_setup.bash
+ros2 launch fairino5_v6_moveit2_config demo.launch.py
+</code></pre>
+</figure>
+<p>이 문서에서는 <code>local_setup.bash</code>를 사용해 FR5 작업공간을 추가합니다. <code>install/setup.bash</code>는 빌드 당시 기록된 다른 작업공간까지 불러올 수 있습니다.</p>
+<p>RViz에 FR5 모델과 MotionPlanning 패널이 표시되는지 확인합니다. 종료할 때는 launch를 실행한 터미널에서 <code>Ctrl+C</code>를 누릅니다.</p>
+<h3 id="section-15">실행 영상</h3>
+<video controls="" playsinline="" preload="metadata" style="width: 100%; max-width: 960px;">
+<source src="videos/run.webm" type="video/webm"/>
+</video>
+<p>문서에서 영상이 재생되지 않으면 <a href="videos/run.webm">실행 영상 열기</a>를 선택합니다.</p></article>
+    <footer class="page-footer"><a href="#document-start">맨 위로 ↑</a></footer>
+  </main>
+</div>
+</body>
+</html>

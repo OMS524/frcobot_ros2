@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="DH AG95 그리퍼 ROS 2 서비스 제어 — ROS 2 Humble 환경 안내">
+<title>DH AG95 그리퍼 ROS 2 서비스 제어</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #172b40;
+  --muted: #5a6d7f;
+  --accent: #1762ba;
+  --line: #dce4ec;
+  --paper: #ffffff;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 6rem; }
+body {
+  margin: 0;
+  background: #f4f7fa;
+  color: var(--ink);
+  font: 16px/1.85 -apple-system, BlinkMacSystemFont, "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+a { color: var(--accent); text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #83b6f0;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+.skip-link { position: absolute; top: -6rem; left: 1rem; z-index: 5; padding: .5rem 1rem; background: var(--paper); }
+.skip-link:focus { top: 1rem; }
+.layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 2rem; max-width: 1240px; margin: 2rem auto 4rem; padding: 0 1.5rem; }
+.sidebar { min-width: 0; }
+.contents { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding: .7rem .3rem; }
+.contents summary { cursor: pointer; color: var(--ink); font-weight: 700; margin-bottom: .6rem; }
+.contents ol { list-style: none; margin: 0; padding: 0; }
+.contents ol ol { margin: .2rem 0 .6rem .8rem; border-left: 1px solid var(--line); padding-left: .7rem; }
+.contents li { margin: .25rem 0; }
+.contents a { display: block; padding: .18rem 0; color: var(--muted); text-decoration: none; font-size: .83rem; line-height: 1.65; }
+.contents a:hover { color: var(--accent); }
+main { min-width: 0; }
+article { padding: 2.5rem 3rem; background: var(--paper); border: 1px solid var(--line); border-radius: .75rem; box-shadow: 0 5px 22px #172b4005; }
+h1, h2, h3 { line-height: 1.45; letter-spacing: -.025em; }
+h1 { font-size: 2.05rem; margin: 0 0 1.7rem; }
+h2 { font-size: 1.45rem; margin: 3rem 0 1.2rem; padding-top: .2rem; padding-bottom: .7rem; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.13rem; margin: 2rem 0 .8rem; }
+p { margin: .9rem 0; }
+li { margin: .3rem 0; }
+ul, ol { padding-left: 1.5rem; }
+strong { font-weight: 700; }
+code { font-family: "DejaVu Sans Mono", "Liberation Mono", Consolas, monospace; font-size: .86em; }
+:not(pre) > code { padding: .12em .35em; border-radius: .25rem; background: #eef3f8; color: #174a78; overflow-wrap: anywhere; }
+pre { max-width: 100%; margin: 0; padding: 1.1rem 1.3rem; overflow-x: auto; line-height: 1.7; tab-size: 4; word-break: normal; overflow-wrap: normal; }
+pre code { white-space: pre; color: inherit; }
+.code-block { min-width: 0; max-width: 100%; margin: 1.2rem 0; border: 1px solid var(--line); border-radius: .5rem; background: #f3f6f9; color: #344d63; }
+.code-block figcaption { padding: .55rem 1.3rem; border-bottom: 1px solid var(--line); font-size: .8rem; font-weight: 700; line-height: 1.5; }
+.code-block--terminal { background: #142638; color: #eef5fc; border-color: #263c53; }
+.code-block--terminal figcaption { color: #bed5ec; border-color: #2b425a; }
+.code-block--path { background: #edf5ff; color: #174a78; border-color: #b9d3ee; border-left: 4px solid #4384c4; }
+.code-block--path figcaption { border-color: #ccdef0; }
+.code-block--path pre, .code-block--path code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.code-block--config { background: #f6f2fb; color: #553873; border-color: #dcd0eb; }
+.code-block--config figcaption { border-color: #e3d9ee; }
+.code-block--diagram { background: #f3f6f9; color: #344d63; }
+blockquote { margin: 1.3rem 0; padding: .7rem 1.1rem; border-left: 4px solid #d3a443; border-radius: 0 .4rem .4rem 0; background: #fff9ea; color: #634a19; }
+blockquote p { margin: .2rem 0; }
+.table-scroll { max-width: 100%; overflow-x: auto; margin: 1.2rem 0; border: 1px solid var(--line); border-radius: .45rem; }
+table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+th, td { padding: .65rem .9rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+th { background: #eff4f9; font-weight: 700; }
+tr:last-child td { border-bottom: 0; }
+tbody tr:nth-child(even) { background: #fafcfe; }
+img { display: block; width: auto; max-width: 100%; height: auto; margin: 1.5rem auto .8rem; border: 1px solid var(--line); border-radius: .4rem; }
+p:has(> em:only-child) { color: var(--muted); font-size: .88rem; }
+video { display: block; max-width: 100%; height: auto; margin: 1.2rem auto; border-radius: .5rem; background: #142638; }
+.page-footer { padding: 1.3rem 0; text-align: right; font-size: .85rem; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 1rem; margin-top: 1rem; }
+  .contents { position: static; max-height: none; padding: .85rem 1.2rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--paper); }
+  article { padding: 2rem; }
+}
+@media (max-width: 520px) {
+  body { font-size: 15px; }
+  .layout { padding: 0 .7rem; }
+  article { padding: 1.4rem 1rem; }
+  h1 { font-size: 1.65rem; }
+  h2 { font-size: 1.25rem; margin-top: 2.3rem; }
+  h3 { font-size: 1.05rem; }
+  pre { padding: .9rem; }
+  th, td { padding: .6rem; }
+}
+@media print {
+  @page { margin: 18mm; }
+  body { background: white; color: black; font-size: 10pt; }
+  .sidebar, .skip-link, .page-footer { display: none; }
+  .layout { display: block; max-width: none; margin: 0; padding: 0; }
+  article { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+  h1 { font-size: 22pt; }
+  h2 { font-size: 16pt; }
+  h3 { font-size: 12pt; }
+  h1, h2, h3 { break-after: avoid; }
+  .code-block { background: #f4f6f8; color: black; border-color: #ccd3da; break-inside: avoid; }
+  .code-block figcaption { color: black; border-color: #ccd3da; }
+  pre { white-space: pre-wrap; }
+  pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .table-scroll { overflow: visible; }
+  thead { display: table-header-group; }
+  tr, img { break-inside: avoid; }
+  img { max-height: 220mm; object-fit: contain; }
+  a { color: #174a78; }
+  video { display: none; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#document">본문으로 이동</a>
+<div class="layout">
+  <aside class="sidebar">
+    <details class="contents" open>
+      <summary>목차</summary>
+      <nav aria-label="문서 목차"><ol><li><a href="#section-1">1. 통신 구조 및 설명</a></li><li><a href="#section-2">2. 사용법 (실습 - 그리퍼 활성화, 제어)</a><ol><li><a href="#section-3">2-1. 명령 서버 실행 — 터미널 1</a></li><li><a href="#section-4">2-2. 명령 호출 준비 — 터미널 2</a></li><li><a href="#section-5">2-3. 그리퍼 활성화</a></li><li><a href="#section-6">2-4. 그리퍼 위치 제어</a></li><li><a href="#section-7">2-5. 동작 완료 및 현재 위치 확인</a></li></ol></li></ol></nav>
+    </details>
+  </aside>
+  <main id="document">
+    <article aria-labelledby="document-start"><h1 id="document-start">DH AG95 그리퍼 ROS 2 서비스 제어</h1>
+<h2 id="section-1">1. 통신 구조 및 설명</h2>
+<p>FR5 플랜지에 연결된 <strong>DH Robotics AG-160-95-W-S</strong> 그리퍼를 FAIRINO 공식 <code>fairino_hardware</code> 패키지로 제어합니다.</p>
+<figure class="code-block code-block--diagram" aria-labelledby="code-caption-1">
+<figcaption id="code-caption-1">통신 구조</figcaption>
+<pre><code class="language-text">PC의 ROS 2 서비스 호출
+    → ros2_cmd_server
+    → Ethernet → FR5 제어기 (192.168.58.2)
+    → 플랜지 RS485 통신 → DH 그리퍼
+</code></pre>
+</figure>
+<p>PC에서 명령을 보내면 FR5 제어기가 플랜지 통신을 통해 그리퍼에 전달합니다. 따라서 <strong>이 제어 방식은 FAIRINO 제어기에 의존합니다.</strong> DH 그리퍼 자체는 다른 장비에서도 사용할 수 있지만, 여기서 사용하는 <code>ActGripper()</code>, <code>MoveGripper()</code>는 FAIRINO API입니다. <a href="https://fairino-doc-en.readthedocs.io/3.9.3/ROSGuide/ros2guide.html#quick-start">공식 ROS 2 안내</a></p>
+<p>명령은 하나의 ROS 2 서비스로 전달하며, 요청의 <code>cmd_str</code>에 명령 문자열을 넣고 응답의 <code>cmd_res</code>로 결과를 받습니다.</p>
+<div aria-label="표 1" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th scope="col">항목</th>
+<th scope="col">값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>서비스 이름</td>
+<td><code>/fairino_remote_command_service</code></td>
+</tr>
+<tr>
+<td>서비스 타입</td>
+<td><code>fairino_msgs/srv/RemoteCmdInterface</code></td>
+</tr>
+<tr>
+<td>활성화 명령</td>
+<td><code>ActGripper(그리퍼번호, 활성화여부)</code></td>
+</tr>
+<tr>
+<td>이동 명령</td>
+<td><code>MoveGripper(그리퍼번호, 목표위치)</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="section-2">2. 사용법 (실습 - 그리퍼 활성화, 제어)</h2>
+<p>Ubuntu 22.04 / ROS 2 Humble에서 <code>~/fairino_ws</code>의 <strong>패키지 빌드가 완료되어 있고</strong>, PC–FR5 연결 및 WebApp의 <strong>1번 그리퍼 등록</strong>이 끝난 상태를 기준으로 합니다.</p>
+<p>기존 MoveIt 실행을 종료하고 두 터미널을 사용합니다. 터미널에 <code>(base)</code>가 표시되면 먼저 <code>conda deactivate</code>를 실행합니다.</p>
+<blockquote>
+<p>활성화와 이동 명령은 실제 그리퍼를 움직일 수 있습니다. 손과 물체를 그리퍼 사이에서 치운 뒤 실행합니다.</p>
+</blockquote>
+<h3 id="section-3">2-1. 명령 서버 실행 — 터미널 1</h3>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-2">
+<figcaption id="code-caption-2">터미널 명령어</figcaption>
+<pre><code class="language-bash">source /opt/ros/humble/setup.bash
+source ~/fairino_ws/install/local_setup.bash
+
+ros2 run fairino_hardware ros2_cmd_server --ros-args \
+  -p gripper_vel:=20 \
+  -p gripper_force:=20
+</code></pre>
+</figure>
+<p>로봇 연결 성공 로그를 확인하고 터미널을 켜 둡니다. <code>gripper_vel</code>과 <code>gripper_force</code>는 이후 이동 명령에 전달하는 속도·힘의 백분율 요청값입니다. <code>20</code>이 20 mm/s 또는 20 N을 뜻하지는 않습니다.</p>
+<h3 id="section-4">2-2. 명령 호출 준비 — 터미널 2</h3>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-3">
+<figcaption id="code-caption-3">터미널 명령어</figcaption>
+<pre><code class="language-bash">source /opt/ros/humble/setup.bash
+source ~/fairino_ws/install/local_setup.bash
+</code></pre>
+</figure>
+<p>이후 명령은 모두 터미널 2에서 실행합니다. 응답의 첫 번째 결과 코드가 <code>0</code>이 아니면 오류를 확인한 뒤 다음 단계로 진행합니다.</p>
+<h3 id="section-5">2-3. 그리퍼 활성화</h3>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-4">
+<figcaption id="code-caption-4">터미널 명령어</figcaption>
+<pre><code class="language-bash">ros2 service call /fairino_remote_command_service \
+  fairino_msgs/srv/RemoteCmdInterface \
+  "{cmd_str: 'ActGripper(1,1)'}"
+</code></pre>
+</figure>
+<p>첫 번째 <code>1</code>은 그리퍼 번호, 두 번째 <code>1</code>은 활성화를 뜻합니다. <code>cmd_res='0'</code>이면 SDK 호출 성공입니다. 이미 활성화되어 있다면 상태 조회부터 진행합니다.</p>
+<p>초기화 동작이 끝나면 활성화 상태를 조회합니다.</p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-5">
+<figcaption id="code-caption-5">터미널 명령어</figcaption>
+<pre><code class="language-bash">ros2 service call /fairino_remote_command_service \
+  fairino_msgs/srv/RemoteCmdInterface \
+  "{cmd_str: 'GetGripperActivateStatus()'}"
+</code></pre>
+</figure>
+<p>현재 장비에서 확인한 응답은 <code>cmd_res='0,0,1'</code>입니다. 순서대로 <strong>조회 성공, 고장 없음, 활성화 비트마스크 1(bit 0 켜짐)</strong>을 의미합니다. 마지막 값은 그리퍼 번호나 이동 완료 여부가 아닙니다.</p>
+<h3 id="section-6">2-4. 그리퍼 위치 제어</h3>
+<p>1번 그리퍼를 SDK 기준 목표 위치 50%로 이동시킵니다.</p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-6">
+<figcaption id="code-caption-6">터미널 명령어</figcaption>
+<pre><code class="language-bash">ros2 service call /fairino_remote_command_service \
+  fairino_msgs/srv/RemoteCmdInterface \
+  "{cmd_str: 'MoveGripper(1,50)'}"
+</code></pre>
+</figure>
+<ul>
+<li><code>1</code>: WebApp에 등록한 그리퍼 번호</li>
+<li><code>50</code>: 목표 위치 백분율. 입력 범위는 <code>0~100</code>이며 mm나 관절 각도가 아닙니다.</li>
+</ul>
+<p>속도와 힘은 터미널 1에서 설정한 값을 사용합니다. 위치값을 바꿀 때는 실제 열림·닫힘 방향과 위치 피드백을 확인하며 진행합니다.</p>
+<p>응답 <code>cmd_res='0'</code>은 SDK 호출 성공을 의미하며, 실제 동작 완료는 다음 단계에서 확인합니다.</p>
+<h3 id="section-7">2-5. 동작 완료 및 현재 위치 확인</h3>
+<p><strong>동작 완료 조회:</strong></p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-7">
+<figcaption id="code-caption-7">터미널 명령어</figcaption>
+<pre><code class="language-bash">ros2 service call /fairino_remote_command_service \
+  fairino_msgs/srv/RemoteCmdInterface \
+  "{cmd_str: 'GetGripperMotionDone()'}"
+</code></pre>
+</figure>
+<div aria-label="표 2" class="table-scroll" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th scope="col">응답 예시</th>
+<th scope="col">의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0,0,0</code></td>
+<td>조회 성공, 고장 없음, 동작 미완료</td>
+</tr>
+<tr>
+<td><code>0,0,1</code></td>
+<td>조회 성공, 고장 없음, 동작 완료</td>
+</tr>
+</tbody>
+</table></div>
+<p>동작 미완료라면 잠시 후 다시 조회합니다. 이 명령의 마지막 값은 <strong>동작 완료 여부</strong>이며, 활성화 조회의 마지막 값과 의미가 다릅니다.</p>
+<p><strong>현재 위치 조회:</strong></p>
+<figure class="code-block code-block--terminal" aria-labelledby="code-caption-8">
+<figcaption id="code-caption-8">터미널 명령어</figcaption>
+<pre><code class="language-bash">ros2 service call /fairino_remote_command_service \
+  fairino_msgs/srv/RemoteCmdInterface \
+  "{cmd_str: 'GetGripperCurPosition()'}"
+</code></pre>
+</figure>
+<p>응답은 <code>결과코드,고장상태,현재위치(%)</code> 순서입니다. 예를 들어 <code>0,0,50</code>이면 조회 성공, 고장 없음, 위치 피드백 50%입니다. 위 완료·위치 응답은 해석을 위한 예시이며 실제 움직임과 함께 확인합니다. <a href="https://fairino-doc-en.readthedocs.io/3.9.3/SDKManual/PythonRobotPeripherals.html">공식 그리퍼 API 설명</a></p>
+<p>실습을 마치면 그리퍼가 정지한 것을 확인하고 터미널 1에서 <code>Ctrl+C</code>로 서버를 종료합니다.</p></article>
+    <footer class="page-footer"><a href="#document-start">맨 위로 ↑</a></footer>
+  </main>
+</div>
+</body>
+</html>
