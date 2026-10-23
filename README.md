@@ -9,7 +9,7 @@ FAIRINO FR5의 MoveIt 2 환경 구성과 플랜지에 연결된 DH Robotics AG-1
 - [FR5 MoveIt 2 및 DH 그리퍼 통합 안내 — Markdown](docs/DOCUMENT_MOVEIT2_AND_GRIPPER.md)
 - [FR5 MoveIt 2 및 DH 그리퍼 통합 안내 — HTML](docs/DOCUMENT_MOVEIT2_AND_GRIPPER.html)
 
-통합 문서에는 PC–FR5 네트워크 설정, 패키지 빌드, MoveIt 실행, 그리퍼 활성화·이동·상태 조회 절차가 포함되어 있습니다. HTML은 `docs` 폴더를 내려받은 뒤 브라우저에서 엽니다. 이미지와 영상이 표시되도록 `images/`, `videos/`의 상대 위치를 유지합니다.
+통합 문서에는 PC–FR5 네트워크 설정, 패키지 빌드, MoveIt 실행, 그리퍼 활성화·이동·상태 조회 절차가 포함되어 있습니다. **HTML에는 이미지와 실행 영상이 포함되어 있으므로 HTML 파일 하나만 내려받아 브라우저에서 열면 됩니다.** Markdown으로 배포할 때는 `images/`, `videos/`의 상대 위치가 유지되도록 `docs` 폴더 전체를 함께 전달합니다.
 
 ## 원본 코드 및 출처
 
